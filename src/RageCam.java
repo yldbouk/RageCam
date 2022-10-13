@@ -6,8 +6,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 public class RageCam {
 
-    static final Integer SENSITIVITY = 250;
-
+    static final Integer SENSITIVITY    = 250 ;
+    static final Integer POLLRATE       = 1500;
 
     public static BufferedImage screenshot(){
         Robot robot = null;
@@ -43,6 +43,6 @@ public class RageCam {
         new Timer().scheduleAtFixedRate(new TimerTask(){
             @Override
             public void run(){checkScreenshot();}
-        },0,1500);
+        },0,POLLRATE);
     }
 }
