@@ -6,8 +6,11 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bytedeco.javacv.*;
+
 import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.FrameGrabber;
+import org.bytedeco.javacv.OpenCVFrameConverter;
+import org.bytedeco.javacv.OpenCVFrameGrabber;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
 import org.bytedeco.opencv.opencv_core.IplImage;
 
@@ -15,7 +18,7 @@ public class RageCam {
 
     static final Integer SENSITIVITY    = 250 ;
     static final Integer POLLRATE       = 1500;
-
+    static String settingLocation = new SettingsManager().getSettings()[0]+(System.getProperty("os.name").startsWith("Windows") ? "\\" : "/");
     static FrameGrabber webcam = new OpenCVFrameGrabber(0);;
     static OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
 
@@ -62,7 +65,7 @@ public class RageCam {
     }
 
     static void saveCapture(IplImage image){
-        String savePath = System.getProperty("user.home")+ "\\RageCam\\" + new Date().toString().replace(':', '-') + ".jpg";
+        String savePath = settingLocation + new Date().toString().replace(':', '-') + ".jpg";
         opencv_imgcodecs.cvSaveImage(savePath, image);
         System.out.println("Saved at: "+ savePath);
     }
@@ -73,8 +76,6 @@ public class RageCam {
         if (!imagesPath.exists()){
             imagesPath.mkdirs();
         }
-
-
         try {
             webcam.start();
         } catch (FrameGrabber.Exception e) {
