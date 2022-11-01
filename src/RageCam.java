@@ -18,8 +18,9 @@ public class RageCam {
 
     static final Integer SENSITIVITY    = 250 ;
     static final Integer POLLRATE       = 1500;
-    static String settingLocation = new SettingsManager().getSettings()[0]+(System.getProperty("os.name").startsWith("Windows") ? "\\" : "/");
-    static FrameGrabber webcam = new OpenCVFrameGrabber(0);;
+    static SettingsManager settingsManager = new SettingsManager();
+    static String settingLocation = settingsManager.getSetting(1)+(System.getProperty("os.name").startsWith("Windows") ? "\\" : "/");
+    static FrameGrabber webcam = new OpenCVFrameGrabber(0);
     static OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
 
     public static BufferedImage screenshot(){
@@ -35,15 +36,9 @@ public class RageCam {
 
     public static void checkScreenshot() {
         BufferedImage screenshot = screenshot();
-        Boolean flag = true;
-        for (int y=436; y<=607; y++) {
-            int p = screenshot.getRGB(979,y);
-            for (int b=16;b>=0; b-=8) {
-                if(((p >> b) & 0xff) < SENSITIVITY) return;
-            }
-
+        switch (settingsManager.currentGame) {
+            case "GGST.exe": if(GameSettings.GGST(screenshot, SENSITIVITY)) performCapture(); break;
         }
-        performCapture();
     }
 
     private static void performCapture() {
@@ -71,16 +66,7 @@ public class RageCam {
     }
 
     public static void main(String[] args) {
-       // check for images folder
-        File imagesPath = new File(System.getProperty("user.home")+ "\\RageCam\\");
-        if (!imagesPath.exists()){
-            imagesPath.mkdirs();
-        }
-        try {
-            webcam.start();
-        } catch (FrameGrabber.Exception e) {
-            throw new RuntimeException(e);
-        }
+        try { webcam.start(); } catch (FrameGrabber.Exception e) { throw new RuntimeException(e); }
         new Timer().scheduleAtFixedRate(new TimerTask(){
             @Override
             public void run(){checkScreenshot();}
